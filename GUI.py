@@ -55,7 +55,7 @@ class PixhawkMonitor(QMainWindow):
         if result:
             self.status_label.setText("Status: Connected to Pixhawk")
             self.heartbeat_label.setText("Heartbeat: Received")
-            self.timer.start(500)  # 更新數據間隔 500ms
+            self.timer.start(1000)  # 更新數據間隔 1000ms
             self.connect_button.setText("Disconnect from Pixhawk")
         else:
             self.status_label.setText("Status: Connection failed")
@@ -74,17 +74,21 @@ class PixhawkMonitor(QMainWindow):
     def update_data(self):
         """更新 Pixhawk 數據到 GUI"""
         attitude = self.controller.get_attitude()
-        if attitude:
+        if attitude is not None:
             roll, pitch, yaw = attitude
             self.attitude_display.setText(f"Roll: {roll:.2f}°\nPitch: {pitch:.2f}°\nYaw: {yaw:.2f}°")
+        else:
+            self.attitude_display.setText("Wait for attitude data...")
 
         gps = self.controller.get_gps_position()
-        if gps:
+        if gps is not None:
             latitude, longitude, altitude = gps
             self.gps_display.setText(f"Latitude: {latitude:.7f}\nLongitude: {longitude:.7f}\nAltitude: {altitude:.2f}m")
+        else:
+            self.gps_display.setText("Wait for gps data...")
 
         satellites = self.controller.get_satellites_visible()
         if satellites is not None:
             self.satellites_display.setText(f"Satellites Visible: {satellites}")
         else:
-            self.satellites_display.setText("Satellites Visible: 0")
+            self.satellites_display.setText("Wait for satellites data...")
