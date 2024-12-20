@@ -1,7 +1,8 @@
 import sys
 from PyQt5.QtWidgets import QApplication
 from pymavlink import mavutil
-from GUI import PixhawkMonitor
+from GUI import PixhawkMonitor, MainInterface
+
 
 
 class DroneController:
@@ -69,6 +70,8 @@ class DroneController:
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     controller = DroneController()
-    window = PixhawkMonitor(controller)
-    window.show()
+    main_interface = MainInterface(controller)  # 創建主介面
+    main_interface.show()  # 顯示主介面
+    # window = PixhawkMonitor(controller)
+    # window.show()
     sys.exit(app.exec_())
