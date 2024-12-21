@@ -86,7 +86,7 @@ class MainInterface(QMainWindow):
                 self.current_lat, self.current_lon, _ = gps
                 self.update_map_view()
             else:
-                print("無法獲取 GPS 資料，保持預設位置")
+                print("無法獲取 GPS 資料，請重試")
         else:
             print("Pixhawk 未連接")
 
@@ -102,6 +102,8 @@ class MainInterface(QMainWindow):
         result = self.controller.connect()
         if result:
             self.connect_button.setText("斷開與 Pixhawk 的連接")
+            self.refresh_map()
+            
         else:
             self.connect_button.setText("連接失敗，重試")
 
