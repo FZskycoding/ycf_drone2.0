@@ -4,7 +4,6 @@ from pymavlink import mavutil
 from GUI import PixhawkMonitor, MainInterface
 
 
-
 class DroneController:
     def __init__(self):
         self.master = None
@@ -14,6 +13,9 @@ class DroneController:
         try:
             self.master = mavutil.mavlink_connection('COM4', baud=115200)
             self.master.wait_heartbeat()
+            print("Heartbeat received. Connection established.")
+            # 請求資料流
+            self.request_data_stream(mavutil.mavlink.MAV_DATA_STREAM_ALL, rate=4)
             return True
         except Exception as e:
             print(f"Connection failed: {e}")
@@ -29,6 +31,24 @@ class DroneController:
     def is_connected(self):
         """檢查是否已連接"""
         return self.master is not None
+
+    def request_data_stream(self, stream_id, rate):
+        """請求資料流"""
+        if not self.master:
+            print("Not connected to a device.")
+            return
+        try:
+            for _ in range(3):  # 發送 3 次請求以確保生效
+                self.master.mav.request_data_stream_send(
+                    self.master.target_system,
+                    self.master.target_component,
+                    stream_id,
+                    rate,
+                    1  # 啟用資料流
+                )
+            print(f"Requested data stream {stream_id} at rate {rate}.")
+        except Exception as e:
+            print(f"Error requesting data stream: {e}")
 
     def get_attitude(self):
         """獲取姿態數據"""
@@ -72,6 +92,4 @@ if __name__ == "__main__":
     controller = DroneController()
     main_interface = MainInterface(controller)  # 創建主介面
     main_interface.show()  # 顯示主介面
-    # window = PixhawkMonitor(controller)
-    # window.show()
     sys.exit(app.exec_())
