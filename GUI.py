@@ -82,7 +82,7 @@ class MainInterface(QMainWindow):
         if self.controller.is_connected():
             gps = self.controller.get_gps_position()
             
-            if gps:
+            if gps and (gps[0]and gps[1] != 0.000000):
                 self.current_lat, self.current_lon, _ = gps
                 self.update_map_view()
             else:
@@ -154,7 +154,7 @@ class PixhawkMonitor(QWidget):
         # 定時器更新數據
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_data)
-        self.timer.start(1000)
+        self.timer.start(100)
 
     def update_data(self):
         """更新 Pixhawk 數據"""
